@@ -268,4 +268,73 @@ body {
         /* 모바일에서 책 크기 조정 필요 시 여기에 추가 */
         /* 예: width: 90vw; max-width: none; */
     }
+}
+
+/* 책갈피 버튼 스타일 */
+#bookmark-button {
+    position: absolute;
+    top: 15px; /* 책 상단 안쪽으로 위치 조정 */
+    right: 30px; /* 우측에서 조금 더 왼쪽으로 이동 (기존 15px) */
+    font-size: 24px;
+    color: #aaa; /* 기본 별 색상 (회색) */
+    cursor: pointer;
+    z-index: 1100; /* 페이지 네비게이션보다 위에 표시 */
+    user-select: none;
+    transition: color 0.2s ease-in-out;
+}
+
+#bookmark-button.bookmarked {
+    color: gold; /* 책갈피 되었을 때 별 색상 (금색) */
+}
+
+/* 책갈피 스티커 컨테이너 */
+.bookmark-stickers {
+    position: absolute;
+    top: 30px; /* 상단에서 약간 아래 */
+    right: -15px; /* 책 오른쪽 바깥으로 약간 */
+    width: 20px; /* 스티커 너비 */
+    z-index: 1050; /* 페이지보다는 위, 버튼보다는 아래 */
+}
+
+/* 개별 책갈피 스티커 */
+.bookmark-sticker {
+    height: 40px; /* 스티커 높이 */
+    margin-bottom: 5px; /* 스티커 간 간격 */
+    border-radius: 0 3px 3px 0; /* 오른쪽 모서리 둥글게 */
+    cursor: pointer;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-out;
+}
+
+.bookmark-sticker:hover {
+    transform: translateX(-5px); /* 호버 시 왼쪽으로 약간 이동 */
+}
+
+/* 모바일 화면 스타일 조정 */
+@media (max-width: 768px) {
+    .page-navigation {
+        bottom: 5px; /* 모바일에서 하단 간격 더 줄이기 (10px -> 5px) */
+        width: 90%; /* 모바일에서 너비 약간 늘리기 (선택 사항) */
+    }
+
+    .book {
+        /* 모바일에서 책 크기 조정 필요 시 여기에 추가 */
+        /* 예: width: 90vw; max-width: none; */
+    }
+    
+    #bookmark-button {
+        top: 10px; /* 모바일에서 버튼 위치 조정 */
+        right: 25px; /* 모바일에서 왼쪽으로 이동 (기존 10px) */
+        font-size: 20px;
+    }
+
+    .bookmark-stickers {
+        right: -10px; /* 모바일에서 스티커 위치 조정 */
+        width: 15px;
+    }
+
+    .bookmark-sticker {
+        height: 30px;
+        margin-bottom: 4px;
+    }
 } 

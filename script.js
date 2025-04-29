@@ -3,10 +3,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const cover = document.querySelector('.cover');
     const slider = document.getElementById('page-slider');
     const pageIndicator = document.getElementById('page-indicator');
+    const bookmarkButton = document.getElementById('bookmark-button'); // 책갈피 버튼 선택
+    const bookmarkStickersContainer = document.querySelector('.bookmark-stickers'); // 스티커 컨테이너 선택
     
     let pages = []; // 페이지 요소를 저장할 배열 (동적 생성 후 채움)
-    const totalPages = pageData.length + 1; // 커버 포함 총 페이지 수
+    const totalPages = pageData.length + 1; // 커버 포함 총 페이지 수 (pageData 길이 + 커버 1)
     let currentPage = 0; 
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || []; // 책갈피 배열 (로컬 스토리지에서 로드)
+    const bookmarkColors = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF']; // 스티커 색상
+    const MAX_BOOKMARKS = 5; // 최대 책갈피 수
+
+    // --- 책갈피 관련 함수 ---
+    function updateBookmarkButton() {
+        if (currentPage > 0 && bookmarks.includes(currentPage)) {
+            bookmarkButton.classList.add('bookmarked');
+        } else {
+            bookmarkButton.classList.remove('bookmarked');
+        }
+        // 커버(0페이지)에서는 버튼 숨김
+        bookmarkButton.style.display = currentPage === 0 ? 'none' : 'block';
+    }
+
+    function updateBookmarkStickers() {
+        bookmarkStickersContainer.innerHTML = ''; // 기존 스티커 제거
+        bookmarks.forEach((pageNumber, index) => {
+            const sticker = document.createElement('div');
+            sticker.classList.add('bookmark-sticker');
+            sticker.style.backgroundColor = bookmarkColors[index % bookmarkColors.length];
+            sticker.dataset.page = pageNumber;
+            sticker.style.top = `${index * 25}px`; // 스티커 위치 계산 (겹치도록)
+            sticker.addEventListener('click', () => {
+                goToPage(pageNumber);
+            });
+            bookmarkStickersContainer.appendChild(sticker);
+        });
+    }
+
+    function toggleBookmark() {
+        if (currentPage === 0) return; // 커버에서는 작동 안 함
+
+        const index = bookmarks.indexOf(currentPage);
+        if (index > -1) {
+            // 이미 책갈피 되어 있으면 제거
+            bookmarks.splice(index, 1);
+        } else {
+            // 책갈피 추가
+            if (bookmarks.length >= MAX_BOOKMARKS) {
+                bookmarks.shift(); // 가장 오래된 책갈피 제거
+            }
+            bookmarks.push(currentPage);
+            // 페이지 번호 순으로 정렬 (선택 사항)
+            bookmarks.sort((a, b) => a - b);
+        }
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks)); // 로컬 스토리지 저장
+        updateBookmarkButton();
+        updateBookmarkStickers();
+    }
 
     // --- 페이지 동적 생성 함수 ---
     function createBookPages() {
@@ -111,7 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
         slider.max = totalPages - 1; 
         slider.value = currentPage;
         pageIndicator.textContent = `${currentPage} / ${totalPages - 1}`;
-        updateNavigation(currentPage); // 초기 화살표 상태 등 설정
+        updateNavigation(currentPage);
+        updateBookmarkButton(); // 책갈피 버튼 상태 업데이트 추가
+        updateBookmarkStickers(); // 책갈피 스티커 업데이트 추가
     }
     
     // 네비게이션 업데이트 함수 (화살표 숨김 로직 포함)
@@ -119,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = newPage;
         slider.value = currentPage;
         pageIndicator.textContent = `${currentPage} / ${totalPages - 1}`;
+        updateBookmarkButton(); // 페이지 변경 시 버튼 상태 업데이트
 
         // 페이지별 화살표 표시/숨김 처리
         pages.forEach((page, index) => {
@@ -288,6 +343,9 @@ document.addEventListener('DOMContentLoaded', () => {
         touchStartX = 0;
         touchEndX = 0;
     }
+
+    // --- 책갈피 버튼 클릭 이벤트 ---
+    bookmarkButton.addEventListener('click', toggleBookmark);
 
     // --- 페이지 생성 및 초기화 실행 ---
     createBookPages();
