@@ -70,7 +70,7 @@ body {
 .book {
     width: 84vw; /* 화면 너비의 84% (기존 80vw에서 5% 증가) */
     max-width: 420px; /* 최대 너비 420px (기존 400px에서 5% 증가) */
-    aspect-ratio: 2 / 3; /* 책 비율 (가로:세로) */
+    aspect-ratio: 5 / 9; /* 세로 크기 20% 증가 (기존 2/3 -> 5/9) */
     perspective: 1000px; /* 3D 효과를 위한 원근감 */
     position: relative; /* 자식 요소 absolute positioning 기준 */
     transform-style: preserve-3d; /* 자식 요소 3D 변환 활성화 */
@@ -246,7 +246,7 @@ body {
 }
 
 .poem-content h4 {
-    font-size: 24px; 
+    font-size: 38px; /* 글씨 크기 30% 증가 (29px -> 38px) */
     font-weight: 700; /* Bold 또는 원하는 굵기 */
     margin-top: 0; /* 제목 자체의 상단 마진 제거 */
     margin-bottom: 0.2em; /* 제목 아래 여백 추가 감소 (0.5em -> 0.2em) */
@@ -256,10 +256,10 @@ body {
 
 /* 시 내용 단락 스타일 */
 .poem-content p {
-    line-height: 1.6; /* 연 내부 줄간격 조정 (1.7 -> 1.6) */
-    font-size: 16px; 
-    margin-bottom: 1.5em; /* 연 사이 간격 조정 (주석 해제 및 값 변경 1.2em -> 1.5em) */
-    font-weight: 400; /* 일관된 굵기 */
+    line-height: 1.6;
+    font-size: 25px; /* 글씨 크기 30% 증가 (19px -> 25px) */
+    margin-bottom: 1.5em;
+    font-weight: 400;
 }
 
 /* 연 구분을 위한 <br> 태그 숨김 또는 영향 최소화 */
@@ -270,6 +270,7 @@ body {
 /* 두번째 페이지 제목 등 다른 h2 요소 폰트 */
 .page h2 {
     font-weight: 600; /* SemiBold 또는 원하는 굵기 */
+    font-size: 34px; /* 글씨 크기 30% 증가 (26px -> 34px) */
     margin-top: 6%; /* 상단 여백 증가 (4% -> 6%) */
     margin-bottom: 0.2em; /* 하단 여백 유지 */
     text-align: center; /* 중앙 정렬 */
@@ -282,7 +283,7 @@ body {
     max-width: 90%;
     margin: 0 auto;
     line-height: 1.6; /* 일반 텍스트 줄간격 감소 (1.8 -> 1.6) */
-    font-size: 16px;
+    font-size: 25px; /* 글씨 크기 30% 증가 (19px -> 25px) */
     text-align: justify; /* 양쪽 정렬 */
     word-break: keep-all; /* 한글 단어 단위 줄바꿈 */
 }

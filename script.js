@@ -1,25 +1,114 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const book = document.querySelector('.book'); // book 요소 선택
+    const book = document.querySelector('.book');
     const cover = document.querySelector('.cover');
-    const pages = document.querySelectorAll('.page');
     const slider = document.getElementById('page-slider');
     const pageIndicator = document.getElementById('page-indicator');
+    
+    let pages = []; // 페이지 요소를 저장할 배열 (동적 생성 후 채움)
+    const totalPages = pageData.length + 1; // 커버 포함 총 페이지 수
+    let currentPage = 0; 
 
-    const totalPages = pages.length + 1; // 커버 포함 총 페이지 수
-    let currentPage = 0; // 현재 보고 있는 페이지 (0: 커버, 1: 첫 페이지, ...)
-    let zCounter = 1; // z-index 관리를 위한 카운터 (커버 제외)
+    // --- 페이지 동적 생성 함수 ---
+    function createBookPages() {
+        pageData.forEach((data) => {
+            const page = document.createElement('div');
+            page.classList.add('page');
 
+            // 왼쪽 화살표 추가
+            page.appendChild(createArrow('left'));
+
+            // 페이지 내용 추가
+            const contentDiv = createPageContent(data);
+            page.appendChild(contentDiv);
+
+            // 오른쪽 화살표 추가 (숨김)
+            page.appendChild(createArrow('right'));
+
+            book.appendChild(page);
+        });
+        // 생성된 페이지들 다시 선택
+        pages = document.querySelectorAll('.page');
+    }
+
+    function createArrow(direction) {
+        const arrowDiv = document.createElement('div');
+        arrowDiv.classList.add('nav-arrow', `${direction}-arrow`);
+        if (direction === 'right') {
+             arrowDiv.style.display = 'none'; // CSS에서도 숨겼지만 JS에서도 명시
+        }
+        arrowDiv.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%">
+                <path d="${direction === 'left' ? 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' : 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'}"/>
+            </svg>
+        `;
+        return arrowDiv;
+    }
+
+    function createPageContent(data) {
+        const contentDiv = document.createElement('div');
+        if (data.type === 'poem') {
+            contentDiv.classList.add('poem-content');
+            const title = document.createElement('h4');
+            title.textContent = data.title;
+            contentDiv.appendChild(title);
+
+            let currentParagraph = document.createElement('p');
+            data.content.forEach(line => {
+                if (line === '') {
+                    // 빈 줄이면 현재 단락 마무리하고 새 단락 시작
+                    if (currentParagraph.innerHTML !== '') {
+                        contentDiv.appendChild(currentParagraph);
+                    }
+                    currentParagraph = document.createElement('p');
+                } else {
+                    // 내용이 있으면 <br>로 연결
+                    if (currentParagraph.innerHTML !== '') {
+                        currentParagraph.innerHTML += '<br>';
+                    }
+                    currentParagraph.innerHTML += line;
+                }
+            });
+            // 마지막 단락 추가
+            if (currentParagraph.innerHTML !== '') {
+                 contentDiv.appendChild(currentParagraph);
+            }
+        } else if (data.type === 'illustration') {
+            contentDiv.classList.add('illustration-content');
+            const img = document.createElement('img');
+            img.src = data.imagePath;
+            img.alt = data.altText;
+            img.style.maxWidth = '80%'; // 이미지 크기 제한 (CSS로 옮겨도 됨)
+            img.style.maxHeight = '60%';
+            img.style.objectFit = 'contain';
+            contentDiv.appendChild(img);
+            
+            const caption = document.createElement('p');
+            caption.textContent = data.caption;
+            caption.style.position = 'absolute'; 
+            caption.style.bottom = '10%';
+            caption.style.right = '10%';
+            caption.style.fontSize = '14px';
+            contentDiv.appendChild(caption); 
+            // 이미지 로드 실패 처리 등 추가 가능
+        }
+        return contentDiv;
+    }
+
+    // --- 초기화 및 이벤트 리스너 설정 (기존 로직 활용 및 수정) ---
     // 터치 이벤트 관련 변수
     let touchStartX = 0;
     let touchEndX = 0;
-    const swipeThreshold = 50; // 최소 스와이프 거리 (px)
+    const swipeThreshold = 50; 
 
     // 네비게이션 초기화
-    slider.max = totalPages - 1; // 슬라이더 최대값 설정 (0부터 시작)
-    slider.value = currentPage;
-    pageIndicator.textContent = `${currentPage} / ${totalPages - 1}`;
-
-    // 네비게이션 업데이트 함수
+    function initializeNavigation() {
+        slider.max = totalPages - 1; 
+        slider.value = currentPage;
+        pageIndicator.textContent = `${currentPage} / ${totalPages - 1}`;
+        updateNavigation(currentPage); // 초기 화살표 상태 등 설정
+    }
+    
+    // 네비게이션 업데이트 함수 (화살표 숨김 로직 포함)
     function updateNavigation(newPage) {
         currentPage = newPage;
         slider.value = currentPage;
@@ -29,23 +118,24 @@ document.addEventListener('DOMContentLoaded', () => {
         pages.forEach((page, index) => {
             const pageNumber = index + 1;
             const leftArrow = page.querySelector('.left-arrow');
-            const rightArrow = page.querySelector('.right-arrow');
+            const rightArrow = page.querySelector('.right-arrow'); // 필요 시 사용
 
-            if (!leftArrow || !rightArrow) return; // 화살표 없으면 중단
+            if (!leftArrow) return; 
 
-            leftArrow.classList.remove('hidden'); // 모든 페이지에서 왼쪽 화살표 기본적으로 보이도록
+            leftArrow.classList.remove('hidden'); 
 
-            if (pageNumber === totalPages - 1) {
-                rightArrow.classList.add('hidden'); // 마지막 페이지는 오른쪽 화살표 숨김
-            } else {
-                rightArrow.classList.remove('hidden');
-            }
+            // 마지막 페이지 오른쪽 화살표 숨김 처리 (CSS에서 이미 숨겼지만, 필요시 JS 로직 추가)
+            // if (rightArrow) {
+            //     if (pageNumber === totalPages - 1) rightArrow.classList.add('hidden'); 
+            //     else rightArrow.classList.remove('hidden');
+            // }
         });
     }
 
-    // 특정 페이지로 이동하는 함수
+    // 특정 페이지로 이동하는 함수 (기존 로직 유지)
     function goToPage(targetPage) {
-        // 페이지 범위 확인
+         // ... (이전 goToPage 함수 내용 그대로 사용) ...
+         // 페이지 범위 확인
         if (targetPage < 0) targetPage = 0;
         if (targetPage >= totalPages) targetPage = totalPages - 1;
 
@@ -129,51 +219,39 @@ document.addEventListener('DOMContentLoaded', () => {
         updateNavigation(targetPage); // currentPage 업데이트 등
     }
 
-    // 커버 클릭 이벤트
-    cover.addEventListener('click', () => {
-        if (cover.classList.contains('flipped')) {
-            goToPage(0);
-        } else {
-            goToPage(1);
-        }
-    });
-
-    // 각 페이지 내 이벤트 처리
-    pages.forEach((page, index) => {
-        const pageNumber = index + 1;
-        const leftArrow = page.querySelector('.left-arrow');
-        // const rightArrow = page.querySelector('.right-arrow'); // 오른쪽 화살표 사용 안 함
-
-        // 왼쪽 화살표 클릭 이벤트
+    // --- 이벤트 리스너 (Event Delegation 사용) ---
+    book.addEventListener('click', (event) => {
+        // 왼쪽 화살표 클릭 처리
+        const leftArrow = event.target.closest('.left-arrow');
         if (leftArrow) {
-            leftArrow.addEventListener('click', (event) => {
-                event.stopPropagation(); // 페이지 클릭 이벤트 전파 중단
-                goToPage(currentPage - 1);
-            });
+            event.stopPropagation(); 
+            goToPage(currentPage - 1);
+            return; 
         }
-
-        // 오른쪽 화살표 클릭 이벤트 제거
-        /*
-        if (rightArrow) {
-            rightArrow.addEventListener('click', (event) => {
-                event.stopPropagation(); // 이벤트 전파 중단
-                goToPage(currentPage + 1);
-            });
+        
+        // 페이지 클릭 처리 (다음 페이지)
+        const clickedPageElement = event.target.closest('.page');
+        if (clickedPageElement) {
+            // 페이지 요소 배열에서 인덱스 찾기
+            const pageIndex = Array.from(pages).indexOf(clickedPageElement);
+            if (pageIndex !== -1) {
+                 const pageNumber = pageIndex + 1; // 페이지 번호 (1부터 시작)
+                 // 현재 보이는 페이지이고, 마지막 페이지가 아닐 때만 다음으로
+                 if (pageNumber === currentPage && !clickedPageElement.classList.contains('flipped') && currentPage < totalPages - 1) {
+                    goToPage(currentPage + 1);
+                }
+            }
         }
-        */
-
-        // 페이지 자체 클릭 리스너: 다음 페이지로 이동
-        page.addEventListener('click', (event) => {
-            // 왼쪽 화살표 또는 그 안의 svg/path 클릭 시 페이지 넘김 방지
-            if (event.target === leftArrow || leftArrow.contains(event.target)) {
-                return;
+        
+        // 커버 클릭 처리
+        const clickedCover = event.target.closest('.cover');
+        if(clickedCover) {
+            if (cover.classList.contains('flipped')) {
+                goToPage(0);
+            } else {
+                goToPage(1);
             }
-
-            // 현재 보이는 페이지이고, 마지막 페이지가 아닐 때만 다음 페이지로 이동
-            if (pageNumber === currentPage && !page.classList.contains('flipped') && currentPage < totalPages - 1) {
-                goToPage(currentPage + 1);
-            }
-        });
+        }
     });
 
     // 슬라이더 이벤트
@@ -182,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         goToPage(targetPage);
     });
 
-    // 스와이프 이벤트 처리 (책 전체 영역 대상)
+    // 스와이프 이벤트 처리
     book.addEventListener('touchstart', (event) => {
         touchStartX = event.changedTouches[0].screenX;
     });
@@ -194,21 +272,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSwipe() {
         const swipeDistance = touchEndX - touchStartX;
-
         if (Math.abs(swipeDistance) > swipeThreshold) {
-            if (swipeDistance < 0) {
-                // 오른쪽에서 왼쪽으로 스와이프 (다음 페이지)
+            if (swipeDistance < 0) { 
                 goToPage(currentPage + 1);
             } else {
-                // 왼쪽에서 오른쪽으로 스와이프 (이전 페이지)
                 goToPage(currentPage - 1);
             }
         }
-        // 스와이프 후 좌표 초기화 (선택사항)
         touchStartX = 0;
         touchEndX = 0;
     }
 
-    // 초기 페이지 로드 시 화살표 상태 업데이트
-    updateNavigation(currentPage);
+    // --- 페이지 생성 및 초기화 실행 ---
+    createBookPages();
+    initializeNavigation();
+
 }); 
