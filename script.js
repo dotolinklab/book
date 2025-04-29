@@ -33,11 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!leftArrow || !rightArrow) return; // 화살표 없으면 중단
 
-            if (pageNumber === 1) {
-                leftArrow.classList.add('hidden'); // 첫 페이지는 왼쪽 화살표 숨김
-            } else {
-                leftArrow.classList.remove('hidden');
-            }
+            leftArrow.classList.remove('hidden'); // 모든 페이지에서 왼쪽 화살표 기본적으로 보이도록
 
             if (pageNumber === totalPages - 1) {
                 rightArrow.classList.add('hidden'); // 마지막 페이지는 오른쪽 화살표 숨김
