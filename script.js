@@ -58,43 +58,53 @@ document.addEventListener('DOMContentLoaded', () => {
             cover.style.zIndex = 1; // 넘겨진 커버는 뒤로
         } else if (!shouldCoverBeFlipped && isCoverCurrentlyFlipped) {
             cover.classList.remove('flipped');
-            cover.style.zIndex = totalPages + 1; // 닫힌 커버는 맨 앞으로 (페이지 수 + 1)
+            // cover.style.zIndex = totalPages + 1; // z-index는 아래에서 최종 결정
         }
 
         // 2. 페이지 처리
+        let targetPageElement = null; // 목표 페이지 요소를 저장할 변수
         pages.forEach((page, index) => {
             const pageNumber = index + 1;
             const isPageCurrentlyFlipped = page.classList.contains('flipped');
-            const shouldPageBeFlipped = pageNumber < targetPage; 
+            // 목표 페이지 *이전*의 페이지만 flipped 상태가 되어야 함
+            const shouldPageBeFlipped = pageNumber < targetPage;
 
             if (shouldPageBeFlipped) {
-                // 넘겨진 페이지: flipped 유지/추가, 낮은 z-index
+                // 넘겨진 페이지 처리 (뒤쪽에 위치)
                 if (!isPageCurrentlyFlipped) {
                     page.classList.add('flipped');
                 }
-                page.style.zIndex = pageNumber + 1; // 넘겨진 순서대로 z-index 증가 (커버 z=1 다음)
-            } else if (pageNumber === targetPage) {
-                 // 현재 보여야 할 페이지: flipped 제거, 가장 높은 z-index
-                if (isPageCurrentlyFlipped) {
-                     page.classList.remove('flipped');
-                }
-                page.style.zIndex = totalPages; // 가장 높게 설정하여 보이도록
-            } else { // pageNumber > targetPage
-                // 아직 보이지 않는 페이지: flipped 제거, 가장 낮은 z-index
+                page.style.zIndex = pageNumber + 1; // 넘겨진 순서대로 z-index (커버보다 위)
+            } else {
+                 // 목표 페이지 또는 그 이후 페이지 처리 (앞쪽에 위치해야 함)
                  if (isPageCurrentlyFlipped) {
+                    // 만약 flipped 상태였다면 제거 (뒤로 갈 때)
                     page.classList.remove('flipped');
-                }
-                page.style.zIndex = 1; // 넘겨진 페이지들 및 커버 뒤로
+                 }
+                 // 일단 z-index를 낮게 설정 (목표 페이지만 나중에 높일 것임)
+                 page.style.zIndex = 1;
+                 if (pageNumber === targetPage) {
+                     targetPageElement = page; // 목표 페이지 요소 저장
+                 }
             }
         });
 
-        // 현재 보여야 할 페이지(targetPage)의 z-index를 가장 높게 설정
-        const currentPageElement = targetPage === 0 ? cover : pages[targetPage - 1];
-        if (currentPageElement) {
-             currentPageElement.style.zIndex = totalPages + 1; // 현재 페이지 z-index (가장 높게)
+        // 3. 최종 z-index 설정 (가장 위에 보일 요소 결정)
+        if (targetPage === 0) {
+            // 목표가 커버일 경우
+            cover.style.zIndex = totalPages + 1; // 커버 z-index 가장 높게
+        } else {
+            // 목표가 페이지일 경우
+            if (targetPageElement) {
+                targetPageElement.style.zIndex = totalPages + 1; // 목표 페이지 z-index 가장 높게
+            }
+            // 커버는 확실히 뒤로 보냄 (만약 flipped 상태라면)
+            if (cover.classList.contains('flipped')) {
+                 cover.style.zIndex = 1;
+            }
         }
 
-        updateNavigation(targetPage);
+        updateNavigation(targetPage); // 네비게이션 업데이트
     }
 
     // 커버 클릭 이벤트
