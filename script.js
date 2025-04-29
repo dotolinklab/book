@@ -52,31 +52,57 @@ document.addEventListener('DOMContentLoaded', () => {
         // 현재 페이지와 목표 페이지가 같으면 아무것도 안 함
         if (targetPage === currentPage) return;
 
-        // 1. Z-index 우선 정리
+        // 현재 페이지에서 목표 페이지로 이동하는 방향 결정
+        const goingForward = targetPage > currentPage;
+        
+        // 첫 페이지에서 메인으로 넘어가는 특수 케이스 처리
+        const isFirstToMain = currentPage === 0 || currentPage === 1 && targetPage > currentPage;
+
+        // 페이지 z-index 초기화 (이동 방향에 따라 다르게 설정)
         if (targetPage === 0) {
-            // 목표가 커버인 경우
-            cover.style.zIndex = totalPages + 1; // 커버를 최상위로
+            // 커버로 돌아가는 경우
+            cover.style.zIndex = totalPages + 10;
             pages.forEach((page) => {
-                page.style.zIndex = 1; // 모든 페이지는 낮게
+                page.style.zIndex = 1;
             });
         } else {
-            // 목표가 페이지인 경우
-            cover.style.zIndex = 1; // 커버는 낮게
+            // 페이지로 이동하는 경우
+            cover.style.zIndex = 1;
             
-            pages.forEach((page, index) => {
-                const pageNumber = index + 1;
-                
-                if (pageNumber === targetPage) {
-                    // 목표 페이지는 높게
-                    page.style.zIndex = totalPages + 1;
-                } else if (pageNumber < targetPage) {
-                    // 목표 이전 페이지는 중간 정도 (이미 넘겨진 페이지)
-                    page.style.zIndex = 2;
-                } else {
-                    // 목표 이후 페이지는 가장 낮게
-                    page.style.zIndex = 1;
-                }
+            // 모든 페이지의 z-index를 우선 낮게 설정 (초기화)
+            pages.forEach(page => {
+                page.style.zIndex = 1;
             });
+            
+            // 이동 방향에 따라 z-index 다르게 설정
+            if (goingForward) {
+                // 앞으로 이동 (1→2, 2→3 등)
+                pages.forEach((page, index) => {
+                    const pageNumber = index + 1;
+                    if (pageNumber === targetPage) {
+                        page.style.zIndex = totalPages + 10; // 목표 페이지 최상위
+                    } else if (pageNumber < targetPage) {
+                        page.style.zIndex = totalPages - pageNumber; // 앞 페이지들 순차적으로
+                    }
+                    
+                    // 특수 케이스: 첫 페이지에서 다음 페이지로 넘어갈 때 마지막 페이지 숨김
+                    if (isFirstToMain && pageNumber === totalPages - 1) {
+                        page.style.zIndex = 0; // 마지막 페이지는 완전히 숨김
+                    }
+                });
+            } else {
+                // 뒤로 이동 (3→2, 2→1 등)
+                pages.forEach((page, index) => {
+                    const pageNumber = index + 1;
+                    if (pageNumber === targetPage) {
+                        page.style.zIndex = totalPages + 10; // 목표 페이지 최상위
+                    } else if (pageNumber < targetPage) {
+                        page.style.zIndex = totalPages - pageNumber; // 앞 페이지들 순차적으로
+                    } else if (pageNumber === targetPage + 1) {
+                        page.style.zIndex = totalPages + 5; // 현재 넘기는 페이지는 준-최상위
+                    }
+                });
+            }
         }
 
         // 2. Flipped 클래스 적용 (애니메이션 시작)
