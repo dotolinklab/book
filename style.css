@@ -83,10 +83,11 @@ body {
     top: 0;
     left: 0;
     transform-origin: left center; /* 왼쪽 모서리 기준으로 회전 */
-    transition: transform 0.7s cubic-bezier(0.645, 0.045, 0.355, 1); /* 부드러운 전환 효과 (duration 및 timing-function 수정) */
+    transition: transform 0.8s ease-out; /* 지속시간 늘리고 타이밍 함수 변경 */
     backface-visibility: hidden; /* 뒷면 숨기기 */
     border-radius: 5px 10px 10px 5px;
     overflow: hidden; /* 내용 넘침 방지 */
+    will-change: transform; /* 애니메이션 성능 최적화 */
 }
 
 .cover {
@@ -106,7 +107,7 @@ body {
 }
 
 .page {
-    background-color: #fff; /* 페이지 배경색 */
+    background-color: #FFF8DC; /* Cornsilk 색상으로 변경 */
     color: #333; /* 페이지 글자색 */
     padding: 30px;
     box-sizing: border-box;
