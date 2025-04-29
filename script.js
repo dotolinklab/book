@@ -138,35 +138,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 각 페이지 내 화살표 클릭 이벤트
+    // 각 페이지 내 이벤트 처리
     pages.forEach((page, index) => {
         const pageNumber = index + 1;
         const leftArrow = page.querySelector('.left-arrow');
-        const rightArrow = page.querySelector('.right-arrow');
+        // const rightArrow = page.querySelector('.right-arrow'); // 오른쪽 화살표 사용 안 함
 
+        // 왼쪽 화살표 클릭 이벤트
         if (leftArrow) {
             leftArrow.addEventListener('click', (event) => {
-                event.stopPropagation(); // 이벤트 전파 중단
+                event.stopPropagation(); // 페이지 클릭 이벤트 전파 중단
                 goToPage(currentPage - 1);
             });
         }
 
+        // 오른쪽 화살표 클릭 이벤트 제거
+        /*
         if (rightArrow) {
             rightArrow.addEventListener('click', (event) => {
                 event.stopPropagation(); // 이벤트 전파 중단
                 goToPage(currentPage + 1);
             });
         }
+        */
 
-        // 페이지 자체 클릭 리스너 (선택적 유지 또는 수정)
+        // 페이지 자체 클릭 리스너: 다음 페이지로 이동
         page.addEventListener('click', (event) => {
-            // 화살표 클릭 시 페이지 클릭 이벤트는 무시
-            if (event.target.classList.contains('nav-arrow')) return;
+            // 왼쪽 화살표 또는 그 안의 svg/path 클릭 시 페이지 넘김 방지
+            if (event.target === leftArrow || leftArrow.contains(event.target)) {
+                return;
+            }
 
-            if (pageNumber === currentPage && !page.classList.contains('flipped')) {
-                 if (pageNumber < totalPages - 1) {
-                     // goToPage(pageNumber + 1); // 화살표로 대체되었으므로 주석 처리 또는 삭제
-                 }
+            // 현재 보이는 페이지이고, 마지막 페이지가 아닐 때만 다음 페이지로 이동
+            if (pageNumber === currentPage && !page.classList.contains('flipped') && currentPage < totalPages - 1) {
+                goToPage(currentPage + 1);
             }
         });
     });

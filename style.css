@@ -109,7 +109,7 @@ body {
 .page {
     background-color: #FFF8DC; /* Cornsilk 색상으로 변경 */
     color: #333; /* 페이지 글자색 */
-    padding: 30px 30px; /* 상하 패딩 재조정 (20px -> 30px) */
+    padding: 25px 30px; /* 상하 패딩 추가 감소 (30px -> 20px) */
     box-sizing: border-box;
     box-shadow: inset -2px 0px 5px rgba(0,0,0,0.1); /* 안쪽 그림자 효과 */
     z-index: 5; /* 커버보다는 아래 */
@@ -230,6 +230,7 @@ body {
 
 .right-arrow {
     right: 15px; /* 오른쪽 여백 */
+    display: none; /* 오른쪽 화살표 숨김 */
 }
 
 /* 첫 페이지의 왼쪽 화살표, 마지막 페이지의 오른쪽 화살표 숨김 처리용 클래스 */
@@ -241,13 +242,14 @@ body {
 .poem-content {
     text-align: center; /* 내용 중앙 정렬 (선택 사항) */
     width: 100%; /* 전체 너비 사용 */
-    padding-top: 5%; /* 상단 여백 감소 (10% -> 5%) */
+    padding-top: 8%; /* 상단 여백 증가 (5% -> 8%) */
 }
 
 .poem-content h4 {
     font-size: 24px; 
     font-weight: 700; /* Bold 또는 원하는 굵기 */
-    margin-bottom: 1.5em; /* 제목 아래 여백 조정 (1.2em -> 1.5em) */
+    margin-top: 0; /* 제목 자체의 상단 마진 제거 */
+    margin-bottom: 0.2em; /* 제목 아래 여백 추가 감소 (0.5em -> 0.2em) */
     color: #333; 
     letter-spacing: 0.05em; /* 자간 약간 늘림 */
 }
@@ -268,8 +270,8 @@ body {
 /* 두번째 페이지 제목 등 다른 h2 요소 폰트 */
 .page h2 {
     font-weight: 600; /* SemiBold 또는 원하는 굵기 */
-    margin-top: 5%; /* 상단 여백 유지 */
-    margin-bottom: 1em; /* 하단 여백 감소 (1.5em -> 1em) */
+    margin-top: 6%; /* 상단 여백 증가 (4% -> 6%) */
+    margin-bottom: 0.2em; /* 하단 여백 유지 */
     text-align: center; /* 중앙 정렬 */
     letter-spacing: 0.03em; /* 자간 약간 늘림 */
 }
