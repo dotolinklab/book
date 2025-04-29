@@ -57,17 +57,19 @@
 body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* 수직 정렬을 위쪽으로 변경 */
     min-height: 100vh;
     background-color: #f0f0f0; /* 페이지 배경색 */
     margin: 0;
     font-family: 'Paperlogy', sans-serif; 
     font-weight: 400; /* 기본 굵기 Regular */
+    padding-top: 5vh; /* 위쪽 여백 50% 감소 (10vh -> 5vh) */
+    box-sizing: border-box; /* 패딩 포함하여 높이 계산 */
 }
 
 .book {
-    width: 80vw; /* 화면 너비의 80% */
-    max-width: 400px; /* 최대 너비 */
+    width: 84vw; /* 화면 너비의 84% (기존 80vw에서 5% 증가) */
+    max-width: 420px; /* 최대 너비 420px (기존 400px에서 5% 증가) */
     aspect-ratio: 2 / 3; /* 책 비율 (가로:세로) */
     perspective: 1000px; /* 3D 효과를 위한 원근감 */
     position: relative; /* 자식 요소 absolute positioning 기준 */
