@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 페이지 동적 생성 함수 ---
     function createBookPages() {
-        pageData.forEach((data) => {
+        pageData.forEach((data, index) => {
             const page = document.createElement('div');
             page.classList.add('page');
 
@@ -23,6 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 오른쪽 화살표 추가 (숨김)
             page.appendChild(createArrow('right'));
+            
+            // 페이지 번호 추가
+            const pageNumberDiv = document.createElement('div');
+            pageNumberDiv.classList.add('page-number');
+            pageNumberDiv.textContent = `- ${index + 1} -`; // 페이지 번호 설정
+            page.appendChild(pageNumberDiv);
 
             book.appendChild(page);
         });
